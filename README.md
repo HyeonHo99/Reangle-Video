@@ -1,2 +1,4 @@
-# Reangle-A-Video
-Official implementation of "Reangle-A-Video: 4D Video Generation as Video-to-Video Translation"
+# Reangle-A-Video 
+This repository is the official implementation of [Reangle-A-Video](#).<br>
+
+## Code will be released soon!
