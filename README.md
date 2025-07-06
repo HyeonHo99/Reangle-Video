@@ -84,9 +84,27 @@ This repository is the official implementation of [Reangle-A-Video](https://arxi
       <img src="assets/cat-girl/3.gif" style="width:200px; " alt="Generated video3">
     </td>
   </tr>
-
   
 </table>
+
+## Setup
+### Install Conda Environment
+```
+git clone https://github.com/HyeonHo99/Reangle-Video
+cd Reangle-Video
+conda create -n reangle-video python=3.10
+conda activate reangle-video
+pip install -r requirements.txt
+```
+
+### Install Depth-Anything-V2
+```
+git clone https://github.com/DepthAnything/Depth-Anything-V2.git extern/Depth-Anything-V2
+mkdir -p extern/Depth-Anything-V2/checkpoints && wget -P extern/Depth-Anything-V2/checkpoints https://huggingface.co/depth-anything/Depth-Anything-V2-Large/resolve/main/depth_anything_v2_vitl.pth?download=true -O extern/Depth-Anything-V2/checkpoints/depth_anything_v2_vitl.pth
+mv -f assets/temp/run.py extern/Depth-Anything-V2/run.py && mv -f assets/temp/dpt.py extern/Depth-Anything-V2/depth_anything_v2/dpt.py
+```
+
+
 
 ## Codes will be released soon!
 - [ ] Release code for Dynamic camera control
