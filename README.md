@@ -1,4 +1,4 @@
-# Reangle-A-Video: 4D Video Generation as Video-to-Video Translation 
+# Reangle-A-Video: 4D Video Generation as Video-to-Video Translation (ICCV 2025)
 This repository is the official implementation of [Reangle-A-Video](https://arxiv.org/abs/2503.09151).<br>
 
 [![Project Website](https://img.shields.io/badge/Project-Website-orange)](https://hyeonho99.github.io/reangle-a-video/)
