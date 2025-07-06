@@ -180,7 +180,47 @@ python warp_video_dcc_infill.py --video_folder data/frog_infill/video --depth_fo
 python warp_video_dcc_infill.py --video_folder data/frog_infill/video --depth_folder data/frog_infill/depth --output_folder training-data/frog_infill --deg_pf 0.1 --camera_motion down --num_frames 49
 python warp_video_dcc_infill.py --video_folder data/frog_infill/video --depth_folder data/frog_infill/depth --output_folder training-data/frog_infill --deg_pf 0.4 --camera_motion zoomin --num_frames 49
 python warp_video_dcc_infill.py --video_folder data/frog_infill/video --depth_folder data/frog_infill/depth --output_folder training-data/frog_infill --deg_pf 0.1 --camera_motion zoomout --num_frames 49
-```   
+```
+For example, above commandlines will generate these videos, respectively:
+<table class="center">
+<tr>
+  <td style="text-align:center; width=200;"><b>left 0.2</b></td>
+  <td style="text-align:center; width=200;"><b>right 0.2 </b></td>
+  <td style="text-align:center; width=200;"><b>up 0.2</b></td>
+  <td style="text-align:center; width=200;"><b>down 0.1</b></td>
+  <td style="text-align:center; width=200;"><b>zoomin 0.4</b></td>
+  <td style="text-align:center; width=200;"><b>zoomout 0.1</b></td>
+</tr>
+
+<tr>
+    <td style="width:200px;">
+      <img src="assets/frog_warped_infilled/left_0.2.gif" style="width:200px; " alt="left">
+    </td>
+    <td style="width:200px;">
+      <img src="assets/frog_warped_infilled/right_0.2.gif" style="width:200px; " alt="right">
+    </td>
+    <td style="width:200px;">
+      <img src="assets/frog_warped_infilled/up_0.2.gif" style="width:200px; " alt="up">
+    </td>
+    <td style="width:200px;">
+      <img src="assets/frog_warped_infilled/down_0.1.gif" style="width:200px; " alt="down">
+    </td>
+    <td style="width:200px;">
+      <img src="assets/frog_warped_infilled/zoomin_0.4.gif" style="width:200px; " alt="zoomin">
+    </td>
+    <td style="width:200px;">
+      <img src="assets/frog_warped_infilled/zoomout_0.1.gif" style="width:200px; " alt="zoomout">
+    </td>
+</tr>
+  
+</table>
+
+### 4. Make a training config file for CogVideoX finetuning
+- ```make_training_config.py``` automatically generates the training config file.
+- Put your 'VIDEONAME' instead of 'frog' and Put corresponding text prompt to the ```--original_prompt```
+```
+python make_training_config.py --training_data_dir "training-data/frog" --original_data_dir "data/frog" --original_prompt "a brown frog is sitting on a rock" --training_config_dir "training-configs/frog"
+```
 
 
 ## Codes will be released soon!
