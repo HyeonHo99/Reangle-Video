@@ -103,14 +103,43 @@ git clone https://github.com/DepthAnything/Depth-Anything-V2.git extern/Depth-An
 mkdir -p extern/Depth-Anything-V2/checkpoints && wget -P extern/Depth-Anything-V2/checkpoints https://huggingface.co/depth-anything/Depth-Anything-V2-Large/resolve/main/depth_anything_v2_vitl.pth?download=true -O extern/Depth-Anything-V2/checkpoints/depth_anything_v2_vitl.pth
 mv -f assets/temp/run.py extern/Depth-Anything-V2/run.py && mv -f assets/temp/dpt.py extern/Depth-Anything-V2/depth_anything_v2/dpt.py
 ```
-## Finetune and Inference
+## Finetune & Inference (Dynamic Camera Control)
 1. Put your input video frames in 'data' folder like this: ```data/{VIDEONAME}/video```. For example, we have a sample frog video in ```data/frog/video```.
-   We assume that the number of frames is 49 as default.
-3. Estimate depth of the input video using Depth-Anything-V2:
+   - We assume that the number of frames is 49 as default.
+   - The num_frames (F) can be changed but it should be F=1+4\*f.
+
+   
+2. Estimate depth of the input video using Depth-Anything-V2:
+   - Put your 'VIDEONAME' instead of 'frog'
 ```
-# put your 'VIDEONAME' instead of 'frog'
 python extern/Depth-Anything-V2/run.py --encoder vitl --img-path data/frog/video --outdir data/frog/depth
 ```
+
+3. Generate a set of warped videos, which will be used, along with the original input video, for finetuning (overfitting) the pretrained CogVideoX-I2V on a specific 4D scence.
+   - Note that only valid (visible) pixels within the warped videos will be used for the finetuning.
+   - Note that currently only these 6 camera motion types are implemented: ```'left' (orbit left), 'right' (orbit right), 'up' (orbit up), 'down' (orbit down), zoomin, zoomout```
+  
+
+**Option 1**: Warp
+- Put your 'VIDEONAME' instead of 'frog'
+- Adjust ```--camera_motion``` and ```--deg_pf``` on your needs. (```--deg_pf``` denotes degree per frame)
+```
+# to generate a warped video where camera gradually moves to orbit left with degree per frame 0.2
+python warp_video_dcc.py --video_folder data/frog/video --depth_folder data/frog/depth --output_folder training-data/frog --deg_pf 0.2 --camera_motion left --num_frames 49
+
+# to generate a warped video where camera gradually moves to orbit right with degree per frame 0.2
+python warp_video_dcc.py --video_folder data/frog/video --depth_folder data/frog/depth --output_folder training-data/frog --deg_pf 0.2 --camera_motion right --num_frames 49
+
+python warp_video_dcc.py --video_folder data/frog/video --depth_folder data/frog/depth --output_folder training-data/frog --deg_pf 0.2 --camera_motion up --num_frames 49
+python warp_video_dcc.py --video_folder data/frog/video --depth_folder data/frog/depth --output_folder training-data/frog --deg_pf 0.1 --camera_motion down --num_frames 49
+python warp_video_dcc.py --video_folder data/frog/video --depth_folder data/frog/depth --output_folder training-data/frog --deg_pf 0.4 --camera_motion zoomin --num_frames 49
+python warp_video_dcc.py --video_folder data/frog/video --depth_folder data/frog/depth --output_folder training-data/frog --deg_pf 0.1 --camera_motion zoomout --num_frames 49
+```
+
+**Option 2**: Warp & Infill the missing regions (nearest neighbor infilling; inspired by [DDVM](https://diffusion-vision.github.io/)) to minimize train-inference gap
+```
+python
+```   
 
 
 ## Codes will be released soon!
