@@ -88,7 +88,7 @@ This repository is the official implementation of [Reangle-A-Video](https://arxi
 </table>
 
 ## Setup
-1. Install Conda Environment
+### 1. Install Conda Environment
 ```
 git clone https://github.com/HyeonHo99/Reangle-Video
 cd Reangle-Video
@@ -97,30 +97,32 @@ conda activate reangle-video
 pip install -r requirements.txt
 ```
 
-2. Install Depth-Anything-V2
+### 2. Install Depth-Anything-V2
 ```
 git clone https://github.com/DepthAnything/Depth-Anything-V2.git extern/Depth-Anything-V2
 mkdir -p extern/Depth-Anything-V2/checkpoints && wget -P extern/Depth-Anything-V2/checkpoints https://huggingface.co/depth-anything/Depth-Anything-V2-Large/resolve/main/depth_anything_v2_vitl.pth?download=true -O extern/Depth-Anything-V2/checkpoints/depth_anything_v2_vitl.pth
 mv -f assets/temp/run.py extern/Depth-Anything-V2/run.py && mv -f assets/temp/dpt.py extern/Depth-Anything-V2/depth_anything_v2/dpt.py
 ```
 ## Finetune & Inference (Dynamic Camera Control)
-1. Put your input video frames in 'data' folder like this: ```data/{VIDEONAME}/video```. For example, we have a sample frog video in ```data/frog/video```.
-   - We assume that the number of frames is 49 as default.
-   - The num_frames (F) can be changed but it should be F=1+4\*f.
+### 1. Put your input video frames in 'data' folder like this: ```data/{VIDEONAME}/video```. 
+- For example, we have a sample frog video in ```data/frog/video```.
+- We assume that the number of frames is 49 as default.
+- The num_frames (F) can be changed but it should be F=1+4\*f.
 
    
-2. Estimate depth of the input video using Depth-Anything-V2:
-   - Put your 'VIDEONAME' instead of 'frog'
+### 2. Estimate depth of the input video using Depth-Anything-V2:
+- Put your 'VIDEONAME' instead of 'frog'
 ```
 python extern/Depth-Anything-V2/run.py --encoder vitl --img-path data/frog/video --outdir data/frog/depth
 ```
 
-3. Generate a set of warped videos, which will be used, along with the original input video, for finetuning (overfitting) the pretrained CogVideoX-I2V on a specific 4D scence.
-   - Note that only valid (visible) pixels within the warped videos will be used for the finetuning.
-   - Note that currently only these 6 camera motion types are implemented: ```'left' (orbit left), 'right' (orbit right), 'up' (orbit up), 'down' (orbit down), zoomin, zoomout```
+### 3. Generate a set of warped videos
+- These warped videos, along with the original input video, will be used for for finetuning (overfitting) the pretrained CogVideoX-I2V on a specific 4D scence.
+- Note that only valid (visible) pixels within the warped videos will be used for the finetuning.
+- Note that currently only these 6 camera motion types are implemented: ```'left' (orbit left), 'right' (orbit right), 'up' (orbit up), 'down' (orbit down), zoomin, zoomout```
   
 
-**Option 1**: Warp
+#### Option 1: Warp
 - Put your 'VIDEONAME' instead of 'frog'
 - Adjust ```--camera_motion``` and ```--deg_pf``` on your needs. (```--deg_pf``` denotes degree per frame)
 ```
@@ -135,10 +137,49 @@ python warp_video_dcc.py --video_folder data/frog/video --depth_folder data/frog
 python warp_video_dcc.py --video_folder data/frog/video --depth_folder data/frog/depth --output_folder training-data/frog --deg_pf 0.4 --camera_motion zoomin --num_frames 49
 python warp_video_dcc.py --video_folder data/frog/video --depth_folder data/frog/depth --output_folder training-data/frog --deg_pf 0.1 --camera_motion zoomout --num_frames 49
 ```
+For example, above commandlines will generate these videos, respectively:
+<table class="center">
+<tr>
+  <td style="text-align:center; width=200;"><b>left 0.2</b></td>
+  <td style="text-align:center; width=200;"><b>right 0.2 </b></td>
+  <td style="text-align:center; width=200;"><b>up 0.2</b></td>
+  <td style="text-align:center; width=200;"><b>down 0.1</b></td>
+  <td style="text-align:center; width=200;"><b>zoomin 0.4</b></td>
+  <td style="text-align:center; width=200;"><b>zoomout 0.1</b></td>
+</tr>
 
-**Option 2**: Warp & Infill the missing regions (nearest neighbor infilling; inspired by [DDVM](https://diffusion-vision.github.io/)) to minimize train-inference gap
+<tr>
+    <td style="width:200px;">
+      <img src="assets/frog_warped/left_0.2.gif" style="width:200px; " alt="left">
+    </td>
+    <td style="width:200px;">
+      <img src="assets/frog_warped/right_0.2.gif" style="width:200px; " alt="right">
+    </td>
+    <td style="width:200px;">
+      <img src="assets/frog_warped/up_0.2.gif" style="width:200px; " alt="up">
+    </td>
+    <td style="width:200px;">
+      <img src="assets/frog_warped/down_0.1.gif" style="width:200px; " alt="down">
+    </td>
+    <td style="width:200px;">
+      <img src="assets/frog_warped/zoomin_0.4.gif" style="width:200px; " alt="zoomin">
+    </td>
+    <td style="width:200px;">
+      <img src="assets/frog_warped/zoomout_0.1.gif" style="width:200px; " alt="zoomout">
+    </td>
+</tr>
+  
+</table>
+
+#### Option 2: Warp & Infill 
+- Warp + Infill the missing pixels (nearest neighbor infilling; inspired by [DDVM](https://diffusion-vision.github.io/)) to minimize train-inference gap (reduce inevitable artifacts)
 ```
-python
+python warp_video_dcc_infill.py --video_folder data/frog_infill/video --depth_folder data/frog_infill/depth --output_folder training-data/frog_infill --deg_pf 0.2 --camera_motion left --num_frames 49
+python warp_video_dcc_infill.py --video_folder data/frog_infill/video --depth_folder data/frog_infill/depth --output_folder training-data/frog_infill --deg_pf 0.2 --camera_motion right --num_frames 49
+python warp_video_dcc_infill.py --video_folder data/frog_infill/video --depth_folder data/frog_infill/depth --output_folder training-data/frog_infill --deg_pf 0.2 --camera_motion up --num_frames 49
+python warp_video_dcc_infill.py --video_folder data/frog_infill/video --depth_folder data/frog_infill/depth --output_folder training-data/frog_infill --deg_pf 0.1 --camera_motion down --num_frames 49
+python warp_video_dcc_infill.py --video_folder data/frog_infill/video --depth_folder data/frog_infill/depth --output_folder training-data/frog_infill --deg_pf 0.4 --camera_motion zoomin --num_frames 49
+python warp_video_dcc_infill.py --video_folder data/frog_infill/video --depth_folder data/frog_infill/depth --output_folder training-data/frog_infill --deg_pf 0.1 --camera_motion zoomout --num_frames 49
 ```   
 
 
