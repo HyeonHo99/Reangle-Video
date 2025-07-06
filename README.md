@@ -88,7 +88,7 @@ This repository is the official implementation of [Reangle-A-Video](https://arxi
 </table>
 
 ## Setup
-### Install Conda Environment
+1. Install Conda Environment
 ```
 git clone https://github.com/HyeonHo99/Reangle-Video
 cd Reangle-Video
@@ -97,13 +97,20 @@ conda activate reangle-video
 pip install -r requirements.txt
 ```
 
-### Install Depth-Anything-V2
+2. Install Depth-Anything-V2
 ```
 git clone https://github.com/DepthAnything/Depth-Anything-V2.git extern/Depth-Anything-V2
 mkdir -p extern/Depth-Anything-V2/checkpoints && wget -P extern/Depth-Anything-V2/checkpoints https://huggingface.co/depth-anything/Depth-Anything-V2-Large/resolve/main/depth_anything_v2_vitl.pth?download=true -O extern/Depth-Anything-V2/checkpoints/depth_anything_v2_vitl.pth
 mv -f assets/temp/run.py extern/Depth-Anything-V2/run.py && mv -f assets/temp/dpt.py extern/Depth-Anything-V2/depth_anything_v2/dpt.py
 ```
-
+## Finetune and Inference
+1. Put your input video frames in 'data' folder like this: ```data/{VIDEONAME}/video```. For example, we have a sample frog video in ```data/frog/video```.
+   We assume that the number of frames is 49 as default.
+3. Estimate depth of the input video using Depth-Anything-V2:
+```
+# put your 'VIDEONAME' instead of 'frog'
+python extern/Depth-Anything-V2/run.py --encoder vitl --img-path data/frog/video --outdir data/frog/depth
+```
 
 
 ## Codes will be released soon!
