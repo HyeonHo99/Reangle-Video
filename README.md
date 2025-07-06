@@ -222,7 +222,23 @@ For example, above commandlines will generate these videos, respectively:
 python make_training_config.py --training_data_dir "training-data/frog" --original_data_dir "data/frog" --original_prompt "a brown frog is sitting on a rock" --training_config_dir "training-configs/frog"
 ```
 
+### 5. Run finetuning with inference
+Modify variables in finetune.sh, specifically:
+- Current script assumes a single GPU. If more GPUs are available, check out L8~L25.
+- Put your 'VIDEONAME' instead of 'frog' in ```CAPTION_COLUMN, VIDEO_COLUMN, MASK_COLUMN, VALIDATION_IMAGES_DIR, output_dir``` (L37~L41).
+- Put the correct text prompt (e.g., ```--original_prompt``` from above) in ```--validation_prompt``` (L62).
+- If your GPU has 40GB VRAM, keep ```--gradient_checkpointing```. If your GPU has 80GB VRAM, remove ```--gradient_checkpointing```; this significantly slows down gradient backprop.
 
-## Codes will be released soon!
-- [ ] Release code for Dynamic camera control
+Then, run 
+```
+sh finetune.sh
+```
+  
+
+## All the codes will be released soon!
+- [x] Release code for Dynamic camera control
 - [ ] Release code for Static view transport
+
+## Acknowledgements and Related Works
+- This project builds upon several excellent open source projects: [CogVideoX](https://huggingface.co/THUDM/CogVideoX-5b-I2V), [finetrainers](https://github.com/a-r-r-o-w/finetrainers)
+- Related works that also enables reangling over an user input video: [GCD](https://gcd.cs.columbia.edu/) (ECCV'24), [NVS-Solver](https://github.com/ZHU-Zhiyu/NVS_Solver) (ICLR'25), [TrajectoryAttention](https://xizaoqu.github.io/trajattn/) (ICLR'25), [Recapture](https://generative-video-camera-controls.github.io/) (CVPR'25), [GS-DiT](https://wkbian.github.io/Projects/GS-DiT/) (CVPR'25), [TrajectoryCrafter](https://trajectorycrafter.github.io/) (ICCV'25), [ReCamMaster](https://jianhongbai.github.io/ReCamMaster/) (ICCV'25), ...
